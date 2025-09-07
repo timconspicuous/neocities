@@ -35,5 +35,3 @@ export default function ({ links }: {
 		</>
 	);
 }
-
-export const css = "@import './_components/Button.css';";

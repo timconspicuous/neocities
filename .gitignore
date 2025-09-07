@@ -1,5 +1,4 @@
 _cache
-_site
+public/
 deno.lock
-.vscode
-.env
+env

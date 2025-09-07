@@ -1,5 +1,6 @@
 /* Lume's design system */
 @import "https://unpkg.com/@lumeland/ds@0.5.2/ds.css";
+@import "./_components/Button.css";
 
 body {
   display: grid;

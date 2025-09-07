@@ -1,25 +1,35 @@
 {
-	"imports": {
-		"lume/": "https://deno.land/x/lume@v2.4.2/",
-		"lume/cms/": "https://cdn.jsdelivr.net/gh/lumeland/cms@0.7.3/"
-	},
-	"tasks": {
-		"lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
-		"build": "deno task lume",
-		"serve": "deno task lume -s"
-	},
-	"compilerOptions": {
-		"types": [
-			"lume/types.ts"
-		],
-		"jsx": "react-jsx",
-		"jsxImportSource": "npm:preact"
-	},
-	"exclude": [
-		"./_site"
-	],
-	"fmt": {
-		"useTabs": true,
-		"indentWidth": 4
-	}
+  "imports": {
+    "lume/": "https://deno.land/x/lume@v3.0.8/",
+    "lume/cms/": "https://cdn.jsdelivr.net/gh/lumeland/cms@0.12.5/",
+    "lume/jsx-runtime": "https://deno.land/x/ssx@v0.1.12/jsx-runtime.ts"
+  },
+  "tasks": {
+    "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
+    "build": "deno task lume",
+    "serve": "deno task lume -s"
+  },
+  "compilerOptions": {
+    "types": [
+      "lume/types.ts"
+    ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "lume"
+  },
+  "exclude": [
+    "./public"
+  ],
+  "fmt": {
+    "useTabs": true,
+    "indentWidth": 4
+  },
+  "unstable": [
+    "temporal",
+    "fmt-component"
+  ],
+  "lint": {
+    "plugins": [
+      "https://deno.land/x/lume@v3.0.8/lint.ts"
+    ]
+  }
 }

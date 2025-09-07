@@ -3,7 +3,6 @@ export default function Layout(data: Lume.Data) {
 	const description = data.header?.description || data.description || "";
 	const avatar = data.header?.avatar || "/avatar.jpg";
 	const footer = data.footer || "";
-	const links = data.links || [];
 
 	return (
 		<html lang={data.lang || "en"}>
@@ -26,12 +25,11 @@ export default function Layout(data: Lume.Data) {
 					media="(prefers-color-scheme: dark)"
 				/>
 				<link rel="stylesheet" href="/styles.css" />
-				<link rel="stylesheet" href="/components.css" />
 				<link
 					rel="icon"
 					type="image/png"
 					sizes="32x32"
-					href="/favicon.png"
+					href="/favicon.svg"
 				/>
 				<link rel="canonical" href={data.url} />
 				{data.extra_head?.map((item: string) => (

@@ -23,10 +23,15 @@ export default function ({
 	// Function to determine text color based on background color brightness
 	const getTextColor = (backgroundColor: string) => {
 		// Remove the # if present and pad to 6 characters if needed
-		const color = (backgroundColor.startsWith("#")
-			? backgroundColor.slice(1)
-			: backgroundColor
-		).padEnd(6, backgroundColor.length <= 4 ? backgroundColor.slice(-1) : "");
+		const color =
+			(backgroundColor.startsWith("#")
+				? backgroundColor.slice(1)
+				: backgroundColor).padEnd(
+					6,
+					backgroundColor.length <= 4
+						? backgroundColor.slice(-1)
+						: "",
+				);
 
 		// Convert hex to RGB
 		const r = parseInt(color.substring(0, 2), 16);
@@ -34,7 +39,7 @@ export default function ({
 		const b = parseInt(color.substring(4, 6), 16);
 
 		// Calculate luminance to determine perceived brightness
-		const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b);
+		const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
 		// Return black for light backgrounds, white for dark ones
 		return luminance > 128 ? "#000000" : "#ffffff";
