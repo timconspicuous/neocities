@@ -1,0 +1,19 @@
+engine: nixery
+
+when:
+  - event: ["push", "pull_request"]
+    branch: ["main"]
+
+dependencies:
+  nixpkgs:
+    - deno
+
+steps:
+  # deploy.ts will push the "./public" directory to Neocities
+  # if you are committing those files, skip the build step
+  - name: Build step
+    command: |
+      deno task build
+  - name: Deploy to Neocities
+    command: |
+      deno run --allow-net --allow-read --allow-env deploy.ts

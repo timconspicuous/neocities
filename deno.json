@@ -1,5 +1,6 @@
 {
   "imports": {
+    "async-neocities": "npm:async-neocities@^4.1.2",
     "lume/": "https://deno.land/x/lume@v3.0.8/",
     "lume/cms/": "https://cdn.jsdelivr.net/gh/lumeland/cms@0.12.5/",
     "lume/jsx-runtime": "https://deno.land/x/ssx@v0.1.12/jsx-runtime.ts"
@@ -7,29 +8,21 @@
   "tasks": {
     "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
     "build": "deno task lume",
-    "serve": "deno task lume -s"
+    "serve": "deno task lume -s",
+    "deploy": "deno run --allow-net --allow-read --allow-env deploy.ts"
   },
   "compilerOptions": {
-    "types": [
-      "lume/types.ts"
-    ],
+    "types": ["lume/types.ts"],
     "jsx": "react-jsx",
     "jsxImportSource": "lume"
   },
-  "exclude": [
-    "./public"
-  ],
+  "exclude": ["./public"],
   "fmt": {
     "useTabs": true,
     "indentWidth": 4
   },
-  "unstable": [
-    "temporal",
-    "fmt-component"
-  ],
+  "unstable": ["temporal", "fmt-component"],
   "lint": {
-    "plugins": [
-      "https://deno.land/x/lume@v3.0.8/lint.ts"
-    ]
+    "plugins": ["https://deno.land/x/lume@v3.0.8/lint.ts"]
   }
 }

@@ -1,4 +1,4 @@
 _cache
 public/
 deno.lock
-env
+.env
