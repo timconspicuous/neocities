@@ -12,7 +12,10 @@ class ReadingProgressWidget {
 	async init() {
 		this.showLoading();
 		try {
-			await this.fetchReadingProgress();
+			const progress = await this.fetchReadingProgress();
+			const metadata = await this.fetchMetadata(progress.isbn13);
+
+			this.currentBook = { ...progress, ...metadata };
 			this.render();
 		} catch (error) {
 			this.showError(
@@ -51,18 +54,16 @@ class ReadingProgressWidget {
 			return currentDate > latestDate ? current : latest;
 		});
 
-		this.currentBook = {
+		return {
 			isbn13: mostRecent.value.identifiers.isbn13,
 			progress: mostRecent.value.bookProgress.percent,
 			updatedAt: mostRecent.value.bookProgress.updatedAt,
 		};
-
-		await this.fetchMetadata();
 	}
 
-	async fetchMetadata() {
+	async fetchMetadata(isbn13) {
 		const response = await fetch(
-			`https://openlibrary.org/api/books?bibkeys=ISBN:${this.currentBook.isbn13}&format=json&jscmd=data`,
+			`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn13}&format=json&jscmd=data`,
 		);
 
 		if (!response.ok) {
@@ -72,10 +73,7 @@ class ReadingProgressWidget {
 		const data = await response.json();
 		const metadata = Object.values(data)[0];
 
-		this.currentBook = {
-			isbn13: this.currentBook.isbn13,
-			progress: this.currentBook.progress,
-			updatedAt: this.currentBook.updatedAt,
+		return {
 			title: metadata.title,
 			author: metadata.authors[0]?.name,
 			coverUrl: metadata.cover?.medium,
