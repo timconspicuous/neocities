@@ -55,14 +55,14 @@ export const layout = "layout.tsx";
 export default ({ comp }: Lume.Data) => {
 	return (
 		<div>
-			<div
+			{/*<div
 				id="reading-progress-widget"
 				data-reading-progress="true"
 				style={{
 					padding: "1rem",
 				}}
 			>
-			</div>
+			</div>*/}
 			<div>
 				<comp.Linktree links={links} />
 			</div>
