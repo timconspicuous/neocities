@@ -1,6 +1,6 @@
 import { marked } from "npm:marked";
 
-export const title = "timconspicuous";
+export const title = "tim's neocities page";
 export const header = {
 	title: "timconspicuous",
 	description: "",
@@ -11,7 +11,7 @@ export const links = [
 	{
 		type: "bluesky",
 		text: "Bluesky",
-		href: "https://bsky.app/profile/timconspicuous.neocities.org",
+		href: "https://bsky.app/profile/timtinkers.online",
 	},
 	{
 		type: "letterboxd",
@@ -46,7 +46,7 @@ export const links = [
 ];
 
 export const footer = marked.parseInline(
-	"Powered by [Lume](https://lume.land)",
+	"Powered by [Lume](https://lume.land), [source code on Tangled](https://tangled.sh/@timtinkers.online/neocities)",
 );
 
 // Layout to use for this page
@@ -54,6 +54,18 @@ export const layout = "layout.tsx";
 
 export default ({ comp }: Lume.Data) => {
 	return (
-		<comp.Linktree links={links} />
+		<div>
+			<div
+				id="reading-progress-widget"
+				data-reading-progress="true"
+				style={{
+					padding: "1rem",
+				}}
+			>
+			</div>
+			<div>
+				<comp.Linktree links={links} />
+			</div>
+		</div>
 	);
 };

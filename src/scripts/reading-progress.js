@@ -58,6 +58,8 @@ class ReadingProgressWidget {
 			isbn13: mostRecent.value.identifiers.isbn13,
 			progress: mostRecent.value.bookProgress.percent,
 			updatedAt: mostRecent.value.bookProgress.updatedAt,
+			totalPages: mostRecent.value.bookProgress.totalPages,
+			currentPage: mostRecent.value.bookProgress.currentPage,
 		};
 	}
 
@@ -82,7 +84,7 @@ class ReadingProgressWidget {
 
 	showLoading() {
 		this.container.innerHTML = `
-      <div class="reading-progress loading">
+		  <div class="reading-progress-container reading-progress-loading">
         <div class="progress-skeleton">
           <div class="skeleton-text"></div>
           <div class="skeleton-bar"></div>
@@ -93,7 +95,7 @@ class ReadingProgressWidget {
 
 	showError(message) {
 		this.container.innerHTML = `
-      <div class="reading-progress error">
+      <div class="reading-progress-container reading-progress-error">
         <p>📚 Unable to load current reading progress</p>
         <small>${message}</small>
       </div>
@@ -111,7 +113,7 @@ class ReadingProgressWidget {
 	render() {
 		if (!this.currentBook) {
 			this.container.innerHTML = `
-        <div class="reading-progress empty">
+        <div class="reading-progress-container reading-progress-empty">
           <p>📚 No books currently in progress</p>
         </div>
       `;
@@ -125,37 +127,39 @@ class ReadingProgressWidget {
 			: '<div class="book-cover-placeholder">📖</div>';
 
 		this.container.innerHTML = `
-      <div class="reading-progress">
-        <h3>📚 Currently Reading</h3>
+		  <div class="reading-progress-container">
+        <div class="reading-progress-header">
+          <span>📚</span> Currently Reading
+        </div>
         <div class="book-info">
-          <div class="book-header">
-            ${coverImage}
-            <div class="book-text">
-              <div class="book-title">
-              ${this.escapeHtml(this.currentBook.title)}</div>
-              <div class="book-author">
-              by ${this.escapeHtml(this.currentBook.author)}</div>
+          ${coverImage}
+          <div class="book-details">
+            <div class="book-title">
+            ${this.escapeHtml(this.currentBook.title)}
             </div>
-          </div>
-          <div class="progress-container">
-            <div class="progress-bar">
-              <div
-                class="progress-fill"
-                style="width: ${this.currentBook.progress}%"
-              ></div>
+            <div class="book-author">
+              by ${this.escapeHtml(this.currentBook.author)}
             </div>
-            <div class="progress-text">
-              ${this.currentBook.progress}% complete
+            <div class="book-meta">
+              <span class="progress-badge">In progress</span>
+              <span class="last-updated">
+                Updated ${this.formatDate(this.currentBook.updatedAt)}
+              </span>
             </div>
-          </div>
-          <div class="last-updated">
-            Updated ${this.formatDate(this.currentBook.updatedAt)}
           </div>
         </div>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${this.currentBook.progress}%"></div>
+          </div>
+          <div class="progress-details">
+            <span class="progress-percent">${this.currentBook.progress}%</span>
+            <span class="progress-pages">${this.currentBook.currentPage} / ${this.currentBook.totalPages} pages</span>
+          </div>
       </div>
-    `;
+    </div>
+  `;
 	}
-
 	escapeHtml(text) {
 		const div = document.createElement("div");
 		div.textContent = text;

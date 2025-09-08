@@ -42,16 +42,16 @@ export default function Layout(data: Lume.Data) {
 						<script
 							dangerouslySetInnerHTML={{
 								__html: `
-				let theme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches
-				  ? "dark"
-				  : "light");
-				document.documentElement.dataset.theme = theme;
-				function changeTheme() {
-				  theme = theme === "dark" ? "light" : "dark";
-				  localStorage.setItem("theme", theme);
-				  document.documentElement.dataset.theme = theme;
-				}
-			  `,
+        				let theme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches
+        				  ? "dark"
+        				  : "light");
+        				document.documentElement.dataset.theme = theme;
+        				function changeTheme() {
+        				  theme = theme === "dark" ? "light" : "dark";
+        				  localStorage.setItem("theme", theme);
+        				  document.documentElement.dataset.theme = theme;
+        				}
+			        `,
 							}}
 						/>
 						<button
@@ -84,6 +84,7 @@ export default function Layout(data: Lume.Data) {
 				{footer && (
 					<footer dangerouslySetInnerHTML={{ __html: footer }} />
 				)}
+				<script src="/scripts/reading-progress.js"></script>
 			</body>
 		</html>
 	);

@@ -5,13 +5,13 @@ import simpleIcons from "https://deno.land/x/lume_icon_plugins@v0.2.4/simpleicon
 
 const site = lume({
 	src: "./src",
-	dest: "./public"
+	dest: "./public",
 });
 
 site.use(jsx());
 site.use(postcss());
 site.add("styles.css");
-site.copy([".jpg", ".svg"]);
+site.copy([".jpg", ".svg", ".js"]);
 site.use(simpleIcons());
 
 export default site;
