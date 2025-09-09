@@ -1,75 +1,258 @@
 /* Lume's design system */
 @import "https://unpkg.com/@lumeland/ds@0.5.2/ds.css";
 
-@import "./styles/button.css";
+@import "./styles/linktree.css";
 @import "./styles/readingProgress.css";
 
+* {
+    box-sizing: border-box;
+}
+
 body {
-  display: grid;
-  grid-template-columns: minmax(0, 500px);
-  grid-template-rows: 1fr auto;
-  min-height: 100vh;
-  text-align: center;
-  padding: max(20px, 5vh) 20px;
-  row-gap: 20px;
-  justify-content: center;
-  align-content: center;
-}
-
-main {
-  align-self: center;
-}
-
-.header {
-  font: var(--font-body);
-  margin-bottom: min(5vh, 100px);
-  color: var(--color-text);
-
-  p {
     margin: 0;
-    text-wrap: balance;
+    padding: 0;
+    min-height: 100vh;
+    font: var(--font-body);
+    overflow-x: hidden;
+    background: #151021;
+}
 
-    +p {
-      margin-top: .5em;
+#tarot-app {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent horizontal scroll during transitions */
+}
+
+/* Background system */
+#background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.card-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition:
+        opacity 0.8s ease-in-out,
+        transform 0.8s ease-in-out;
+    opacity: 0;
+}
+
+.card-background.active {
+    opacity: 1;
+}
+
+/* Main tarot layout */
+.tarot-layout {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.card-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-100px, -50%);
+    z-index: 1;
+}
+
+.tarot-card {
+    width: 365px;
+    height: 565px;
+    perspective: 1000px;
+}
+
+.card-image {
+    filter: grayscale(50%);
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    transition: opacity 0.3s ease-in-out;
+    position: relative;
+    z-index: 2;
+}
+
+.content-container {
+    position: absolute;
+    right: 50%;
+    top: 50%;
+    transform: translate(100px, -50%);
+    width: 365px;
+    max-width: 90vw;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.content-title {
+    color: #e0e0e0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+}
+
+.content-wrapper {
+    background: rgba(20, 20, 20, 0.75);
+    border: 1px solid rgba(75, 57, 118, 0.3);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+    width: 100%;
+}
+
+/* Card content styling */
+.card-content {
+    display: none;
+}
+
+.card-content.active {
+    display: block;
+}
+
+.card-content h2 {
+    margin-top: 0;
+    color: #664ea0;
+    font-size: 1.5rem;
+}
+
+.card-content em {
+    color: #664ea0;
+    font-style: italic;
+}
+
+/* Navigation */
+.tarot-navigation {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    z-index: 10;
+}
+
+.nav-button {
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(75, 57, 118, 0.4);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #664ea0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.nav-button:hover {
+    background: rgba(48, 37, 75, 0.2);
+    border-color: rgba(75, 57, 118, 0.6);
+    transform: scale(1.1);
+}
+
+.nav-button:active {
+    transform: scale(0.95);
+}
+
+.nav-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.card-indicator {
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(75, 57, 118, 0.4);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    color: #664ea0;
+    font-weight: bold;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .tarot-layout {
+        padding: 1rem;
     }
-  }
-}
 
-.header-avatar {
-  border-radius: 50%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  object-position: center center;
-  width: 150px;
-  max-width: 50vw;
-}
+    .card-container {
+        transform: translate(-75px, -50%) scale(0.75);
+        transform-origin: center;
+    }
 
-.header-title {
-  font: var(--font-title);
-  letter-spacing: var(--font-title-spacing);
-  margin: .5em 0 0;
-  color: var(--color-base);
-}
+    .content-container {
+        transform: translate(75px, -50%) scale(0.75);
+        transform-origin: center;
+        width: calc(365px * 0.75);
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 
-.header-theme {
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
-}
+    .tarot-card {
+        width: calc(365px * 0.75);
+        height: calc(565px * 0.75);
+    }
 
-footer {
-  font: var(--font-small);
-  color: var(--color-dim);
+    .content-wrapper {
+        height: auto;
+        max-height: calc(565px * 0.75);
+        overflow-y: auto;
+    }
 
-  >* {
-    margin: 0;
-  }
+    .content-title {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+    }
 
-  >*+* {
-    margin-top: 1em;
-  }
+    .tarot-navigation {
+        bottom: 1rem;
+        gap: 1.5rem;
+    }
 
-  a {
-    color: inherit;
-  }
+    .nav-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .card-indicator {
+        padding: 0.4rem 0.8rem;
+        min-width: 50px;
+    }
 }

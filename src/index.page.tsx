@@ -1,11 +1,6 @@
 import { marked } from "npm:marked";
 
 export const title = "tim's neocities page";
-export const header = {
-	title: "timconspicuous",
-	description: "",
-	avatar: "/avatar.jpg",
-};
 
 export const links = [
 	{
@@ -54,17 +49,12 @@ export const layout = "layout.tsx";
 
 export default ({ comp }: Lume.Data) => {
 	return (
-		<div>
-			{/*<div
-				id="reading-progress-widget"
-				data-reading-progress="true"
-				style={{
-					padding: "1rem",
-				}}
-			>
-			</div>*/}
-			<div>
+		<div id="tarot-content">
+			<div id="card-0" className="card-content">
 				<comp.Linktree links={links} />
+			</div>
+			<div id="card-1" className="card-content">
+				<comp.ReadingProgress />
 			</div>
 		</div>
 	);

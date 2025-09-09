@@ -1,9 +1,4 @@
 export default function Layout(data: Lume.Data) {
-	const title = data.header?.title || data.title || "timconspicuous";
-	const description = data.header?.description || data.description || "";
-	const avatar = data.header?.avatar || "/avatar.jpg";
-	const footer = data.footer || "";
-
 	return (
 		<html lang={data.lang || "en"}>
 			<head>
@@ -12,18 +7,8 @@ export default function Layout(data: Lume.Data) {
 					name="viewport"
 					content="width=device-width, initial-scale=1.0"
 				/>
-				<title>{title}</title>
+				<title>timconspicuous</title>
 				<meta name="supported-color-schemes" content="light dark" />
-				<meta
-					name="theme-color"
-					content="hsl(220, 20%, 100%)"
-					media="(prefers-color-scheme: light)"
-				/>
-				<meta
-					name="theme-color"
-					content="hsl(220, 20%, 10%)"
-					media="(prefers-color-scheme: dark)"
-				/>
 				<link rel="stylesheet" href="/styles.css" />
 				<link
 					rel="icon"
@@ -32,59 +17,54 @@ export default function Layout(data: Lume.Data) {
 					href="/favicon.svg"
 				/>
 				<link rel="canonical" href={data.url} />
-				{data.extra_head?.map((item: string) => (
-					<div dangerouslySetInnerHTML={{ __html: item }} />
-				))}
 			</head>
 			<body>
-				<main>
-					<header class="header">
-						<script
-							dangerouslySetInnerHTML={{
-								__html: `
-        				let theme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches
-        				  ? "dark"
-        				  : "light");
-        				document.documentElement.dataset.theme = theme;
-        				function changeTheme() {
-        				  theme = theme === "dark" ? "light" : "dark";
-        				  localStorage.setItem("theme", theme);
-        				  document.documentElement.dataset.theme = theme;
-        				}
-			        `,
-							}}
-						/>
+				<div id="tarot-app">
+					<main class="tarot-layout">
+						<div id="card-container" class="card-container">
+							<div class="tarot-card">
+								<img
+									id="card-image"
+									class="card-image"
+									src="/images/tarot/0-the-fool.png"
+									alt="The Fool"
+								/>
+							</div>
+						</div>
+
+						<div id="content-container" class="content-container">
+							<div id="content-wrapper" class="content-wrapper">
+								<div id="content-title" class="content-title">
+								</div>
+								{data.children}
+							</div>
+						</div>
+					</main>
+
+					<nav class="tarot-navigation">
 						<button
-							class="button header-theme"
-							onclick="changeTheme()"
+							type="button"
+							id="prev-card"
+							class="nav-button nav-prev"
+							aria-label="Previous card"
 						>
-							<span class="icon">◐</span>
+							<span class="nav-arrow">←</span>
 						</button>
-						{avatar && (
-							<img
-								class="header-avatar"
-								src={avatar}
-								alt="Avatar"
-								data-lume-transform-images="webp avif 200@2"
-							/>
-						)}
-						<h1 class="header-title">{title}</h1>
-						{description && (
-							<div
-								dangerouslySetInnerHTML={{
-									__html: description,
-								}}
-							/>
-						)}
-					</header>
+						<div id="card-indicator" class="card-indicator">
+							<span id="current-card">0</span>
+						</div>
+						<button
+							type="button"
+							id="next-card"
+							class="nav-button nav-next"
+							aria-label="Next card"
+						>
+							<span class="nav-arrow">→</span>
+						</button>
+					</nav>
+				</div>
 
-					{data.children}
-				</main>
-
-				{footer && (
-					<footer dangerouslySetInnerHTML={{ __html: footer }} />
-				)}
-				<script src="/scripts/reading-progress.js"></script>
+				<script src="/scripts/tarot.js"></script>
 			</body>
 		</html>
 	);

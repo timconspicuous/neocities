@@ -11,7 +11,7 @@ const site = lume({
 site.use(jsx());
 site.use(postcss());
 site.add("styles.css");
-site.copy([".jpg", ".svg", ".js"]);
+site.copy([".jpg", ".png", ".svg", ".js"]);
 site.use(simpleIcons());
 
 export default site;
