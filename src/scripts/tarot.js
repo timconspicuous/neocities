@@ -1,12 +1,11 @@
 class Tarot {
 	constructor() {
-		this.currentCard = 0;
-		this.totalCards = 22; // 0-21 for Major Arcana
+		this.currentCardIndex = 0;
 		this.isTransitioning = false;
 		this.isFirstLoad = true;
 
-		// Major Arcana card names and roman numerals
-		this.cardData = [
+		// Full Major Arcana + back card data
+		this.allCardData = [
 			{ id: "0", name: "The Fool" },
 			{ id: "I", name: "The Magician" },
 			{ id: "II", name: "The High Priestess" },
@@ -29,9 +28,46 @@ class Tarot {
 			{ id: "XIX", name: "The Sun" },
 			{ id: "XX", name: "Judgement" },
 			{ id: "XXI", name: "The World" },
+
+			{ id: "back", name: "Return" },
 		];
 
+		// Available cards (loaded from page data)
+		this.availableCards = [];
+		this.loadAvailableCards();
+
 		this.init();
+	}
+
+	loadAvailableCards() {
+		const cardContentData = document.getElementById("card-content-data");
+		if (!cardContentData) {
+			console.error("Card content data not found");
+			return;
+		}
+
+		try {
+			const cardContent = JSON.parse(cardContentData.textContent);
+
+			// Map card content to available cards with full data
+			this.availableCards = cardContent.map((card) => {
+				const tarotCard = this.allCardData[card.cardIndex] || {
+					id: card.cardIndex.toString(),
+					name: "Unknown Card",
+				};
+
+				return {
+					...tarotCard,
+					cardIndex: card.cardIndex,
+					slug: card.slug,
+					component: card.component,
+				};
+			});
+
+			console.log("Available cards:", this.availableCards);
+		} catch (error) {
+			console.error("Error parsing card content data:", error);
+		}
 	}
 
 	init() {
@@ -88,6 +124,12 @@ class Tarot {
 			() => this.nextCard(),
 		);
 
+		// Make card indicator clickable to return to first card (card 0)
+		document.getElementById("card-indicator")?.addEventListener(
+			"click",
+			() => this.goToFirstCard(),
+		);
+
 		// Keyboard navigation
 		document.addEventListener("keydown", (e) => {
 			if (e.key === "ArrowLeft") {
@@ -96,6 +138,9 @@ class Tarot {
 			} else if (e.key === "ArrowRight") {
 				e.preventDefault();
 				this.nextCard();
+			} else if (e.key === "Home") {
+				e.preventDefault();
+				this.goToFirstCard();
 			}
 		});
 
@@ -138,22 +183,31 @@ class Tarot {
 	loadFromHash() {
 		const hash = globalThis.location.hash.slice(1);
 		if (!hash) {
-			this.currentCard = 0;
+			this.currentCardIndex = 0;
 			this.updateHash();
 			return;
 		}
 
-		// Find card index
-		const cardIndex = this.cardData.findIndex((card) => card.id === hash);
+		// Try to find by card ID first, then by slug
+		let foundIndex = this.availableCards.findIndex((card) =>
+			card.id === hash || card.slug === hash
+		);
 
-		if (cardIndex !== -1) {
-			this.currentCard = cardIndex;
-		} else {
-			// Try parsing as number
-			const num = parseInt(hash);
-			if (!isNaN(num) && num >= 0 && num < this.totalCards) {
-				this.currentCard = num;
+		// If not found, try parsing as card index
+		if (foundIndex === -1) {
+			const cardIndex = parseInt(hash);
+			if (!isNaN(cardIndex)) {
+				foundIndex = this.availableCards.findIndex((card) =>
+					card.cardIndex === cardIndex
+				);
 			}
+		}
+
+		if (foundIndex !== -1) {
+			this.currentCardIndex = foundIndex;
+		} else {
+			// Default to first card if hash doesn't match anything
+			this.currentCardIndex = 0;
 		}
 
 		this.updateImage();
@@ -161,25 +215,45 @@ class Tarot {
 	}
 
 	updateHash() {
-		const card = this.cardData[this.currentCard];
-		globalThis.location.hash = card.id;
+		const currentCard = this.availableCards[this.currentCardIndex];
+		if (currentCard) {
+			// Prefer slug over card ID for URL
+			globalThis.location.hash = currentCard.id || currentCard.slug;
+		}
+	}
+
+	async goToFirstCard() {
+		if (this.isTransitioning) return;
+
+		// Find the first card (card index 0)
+		const firstCardIndex = this.availableCards.findIndex((card) =>
+			card.cardIndex === 0
+		);
+		if (firstCardIndex !== -1 && firstCardIndex !== this.currentCardIndex) {
+			const direction = firstCardIndex < this.currentCardIndex
+				? "right"
+				: "left";
+			this.currentCardIndex = firstCardIndex;
+			await this.transitionToCard(direction);
+		}
 	}
 
 	async previousCard() {
 		if (this.isTransitioning) return;
 
-		this.currentCard = this.currentCard > 0
-			? this.currentCard - 1
-			: this.totalCards - 1;
+		this.currentCardIndex = this.currentCardIndex > 0
+			? this.currentCardIndex - 1
+			: this.availableCards.length - 1;
 		await this.transitionToCard("right");
 	}
 
 	async nextCard() {
 		if (this.isTransitioning) return;
 
-		this.currentCard = this.currentCard < this.totalCards - 1
-			? this.currentCard + 1
-			: 0;
+		this.currentCardIndex =
+			this.currentCardIndex < this.availableCards.length - 1
+				? this.currentCardIndex + 1
+				: 0;
 		await this.transitionToCard("left");
 	}
 
@@ -270,23 +344,34 @@ class Tarot {
 
 	updateImage() {
 		const cardImage = document.getElementById("card-image");
-
 		if (!cardImage) return;
 
+		const currentCard = this.availableCards[this.currentCardIndex];
+		if (!currentCard) return;
+
+		// Handle special case for back card
+		if (currentCard.cardIndex === 22) {
+			cardImage.src = "/images/tarot/back.png";
+			cardImage.alt = "Card Back";
+			return;
+		}
+
 		// Set image source for current card (using PNG extension for pixel art)
-		const cardName = this.cardData[this.currentCard].name.toLowerCase()
-			.replace(/\s+/g, "-");
-		const newSrc = `/images/tarot/${this.currentCard}-${cardName}.png`;
+		const cardName = currentCard.name.toLowerCase().replace(/\s+/g, "-");
+		const newSrc = `/images/tarot/${currentCard.cardIndex}-${cardName}.png`;
 
 		// Update image source and alt text
 		cardImage.src = newSrc;
-		cardImage.alt = this.cardData[this.currentCard].name;
+		cardImage.alt = currentCard.name;
 	}
 
 	updateCardIndicator() {
 		const indicator = document.getElementById("current-card");
 		if (indicator) {
-			indicator.textContent = this.cardData[this.currentCard].id;
+			const currentCard = this.availableCards[this.currentCardIndex];
+			if (currentCard) {
+				indicator.textContent = currentCard.id;
+			}
 		}
 	}
 
@@ -295,8 +380,9 @@ class Tarot {
 		document.querySelectorAll(".card-content").forEach((card) => {
 			card.classList.remove("active");
 		});
-		
-		const currentCard = this.cardData[this.currentCard];
+
+		const currentCard = this.availableCards[this.currentCardIndex];
+		if (!currentCard) return;
 
 		// Update the content title
 		const contentTitle = document.getElementById("content-title");
@@ -306,24 +392,11 @@ class Tarot {
 
 		// Show the current card's content
 		const currentCardContent = document.getElementById(
-			`card-${this.currentCard}`,
+			`card-${currentCard.cardIndex}`,
 		);
 
 		if (currentCardContent) {
 			currentCardContent.classList.add("active");
-		} else {
-			// Fallback content if card doesn't exist yet
-			const contentWrapper = document.getElementById("content-wrapper");
-			if (contentWrapper) {
-				// Create a new content element with the proper ID
-				const newContent = document.createElement("div");
-				newContent.id = `card-${this.currentCard}`;
-				newContent.className = "card-content active";
-				newContent.innerHTML = `
-                <p>Coming soon...</p>
-            `;
-				contentWrapper.appendChild(newContent);
-			}
 		}
 	}
 
